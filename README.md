@@ -12,4 +12,4 @@ Please check [documentation] for additional details.
 
     npm test promised-utils
 
-[documentation]:http://jeditoolkit.com/filesystem-composer/docs/promised-utils.html
+[documentation]:http://jeditoolkit.com/promised-utils/docs/promised-utils.html
