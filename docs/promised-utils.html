@@ -1,0 +1,44 @@
+<!DOCTYPE html>  <html> <head>   <title>promised-utils.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               promised-utils.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-1">#</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="s1">&#39;use strict&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-2">#</a>               </div>               <p><strong>Collection of of utility functions that are useful when working
+with promises.</strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span> <span class="nx">when</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">when</span><span class="p">,</span> <span class="nx">asap</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">asap</span><span class="p">,</span> <span class="nx">defer</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">defer</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-3">#</a>               </div>               <p>function takes array of promises and returns a new promise, which will be
+resolved with an array of associated values. In case if any of the passed
+promises is rejected, returned promise will be rejected as well.</p>
+
+<p><strong>Example:</strong></p>
+
+<pre><code> when
+ ( all([promise1, promise2, promise3])
+ , function resolved(values) {
+     var result = 0
+     values.forEach(function(value) {
+       result += value
+     })
+     doSomething(result)
+   }
+ , function rejected(reason) {
+     console.error(reason)
+   }
+ }
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Creates promise for array of the promises that is resolved with an array</span>
+<span class="cm"> * of the promise resolutions.</span>
+<span class="cm"> * @param {Promise[]} promises</span>
+<span class="cm"> *    Array of promises to create promise for.</span>
+<span class="cm"> */</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">all</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
+  <span class="p">,</span>   <span class="nx">values</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="p">,</span>   <span class="nx">l</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span>
+  <span class="nx">promises</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">asap</span>
+    <span class="p">(</span> <span class="nx">promise</span>
+    <span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
+        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">===</span> <span class="o">--</span><span class="nx">l</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">)</span>
+  <span class="p">})</span>
+  <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
