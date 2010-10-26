@@ -24,11 +24,11 @@ promises is rejected, returned promise will be rejected as well.</p>
 <span class="cm"> * @param {Promise[]} promises</span>
 <span class="cm"> *    Array of promises to create promise for.</span>
 <span class="cm"> */</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">all</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">function</span> <span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
   <span class="p">,</span>   <span class="nx">values</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="p">,</span>   <span class="nx">l</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span>
-  <span class="nx">promises</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">,</span>   <span class="nx">l</span> <span class="o">=</span> <span class="nx">promises</span><span class="p">.</span><span class="nx">length</span>
+  <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">promises</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">asap</span>
     <span class="p">(</span> <span class="nx">promise</span>
     <span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
@@ -39,6 +39,83 @@ promises is rejected, returned promise will be rejected as well.</p>
     <span class="p">)</span>
   <span class="p">})</span>
   <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
+<span class="p">}</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">all</span> <span class="o">=</span> <span class="nx">all</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-4">#</a>               </div>               <p>Function takes deferred promise and returns node.js style callback
+function. If returned callback is called with first non falsy argument
+wrapped promise will be rejected with it, otherwise promise will be
+resolved with a value of the second argument that callaback funcion was
+called with.</p>
+
+<p><strong>Example:</strong></p>
+
+<pre><code> var Callback = require('promised-utils').Callback
+ ,   q = require('q'), when = q.when, defer = q.defer
+
+ function promisedReadFile(path) {
+   var deferred = defer()
+   require('fs').readFile(Callback(deferred)
+   return deferred
+ }
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @param {Deferred}</span>
+<span class="cm"> * @returns {Function}</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+    <span class="k">else</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">Callback</span> <span class="o">=</span> <span class="nx">Callback</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-5">#</a>               </div>               <p>Function returns wrapper function for the passed function. Wrapper function
+always returns a promise, that either will be resolved to a value returned
+by a wrapped function or rejected with an error if wrapped function will
+throw. Wrapper function treats all the arguments passed to it as promises,
+it waits waits untill all are resolved to call a wrapped function with a
+resolution values. This allows wrapping liniar function in a way that they
+don't have to care whether arguments being passed are promises or not.</p>
+
+<p><strong>Example:</strong></p>
+
+<pre><code> var Promised = require('promised-utils').Promised
+ var promisedSum = Promised(function sum(number1Promise, number2Promise) {
+   return number1Promise + number2Promise
+ })
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @param {Function} callee</span>
+<span class="cm"> * @returns {Promise}</span>
+<span class="cm"> */</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">Promised</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">Promised</span><span class="p">(</span><span class="nx">callee</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">promised</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
+    <span class="p">,</span>   <span class="nx">reject</span> <span class="o">=</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span>
+    <span class="p">,</span>   <span class="nx">callback</span> <span class="o">=</span> <span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span>
+    <span class="p">,</span>   <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span>
+
+    <span class="nx">asap</span>
+    <span class="p">(</span> <span class="nx">all</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)</span>
+    <span class="p">,</span> <span class="kd">function</span> <span class="nx">resolved</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+          <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span>
+          <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+          <span class="k">if</span> <span class="p">(</span><span class="kc">undefined</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">reject</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">,</span> <span class="nx">reject</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">name</span>
+    <span class="p">,</span> <span class="nx">cause</span><span class="o">:</span> <span class="nx">reason</span>
+    <span class="p">,</span> <span class="nx">stack</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">callee</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">stack</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
