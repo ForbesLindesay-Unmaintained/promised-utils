@@ -165,5 +165,53 @@ exports['test reject because of exception'] = function(assert, done) {
   resolved = true
 }
 
+exports['test access to `this` pseoudo variable'] = function(assert, done) {
+  var fixture =
+  { name: 'fixture'
+  , value: null
+  , method: Promised(function method(value) {
+      this.value = value
+      return this.name
+    })
+  }
+
+  Q.when
+  ( fixture.method(1)
+  , function resolved(value) {
+      assert.equal(fixture.value, 1, 'property was set correctly')
+      assert.equal(value, fixture.name, 'property was read correctly')
+      done()
+    }
+  , function() {
+      assert.fail('promise unexpectedly rejected')
+      done()
+    }
+  )
+}
+
+exports['test apply `this` pseoudo variable'] = function(assert, done) {
+  var fixture =
+  { name: 'fixture'
+  , value: null
+  , method: Promised(function method(value) {
+      this.value = value
+      return this.name
+    })
+  }
+
+  var scope = { name: 'scope' }
+  Q.when
+  ( fixture.method.apply(scope, [2])
+  , function resolved(value) {
+      assert.equal(scope.value, 2, 'property was set correctly')
+      assert.equal(value, scope.name, 'property was read correctly')
+      done()
+    }
+  , function() {
+      assert.fail('promise unexpectedly rejected')
+      done()
+    }
+  )
+}
 
 if (module == require.main) require('test').run(exports)
