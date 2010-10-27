@@ -165,6 +165,25 @@ exports['test reject because of exception'] = function(assert, done) {
   resolved = true
 }
 
+exports['test function without arguments'] = function(assert, done) {
+  var r = 'bla'
+
+  var test = Promised(function test() {
+    return r
+  })
+
+  Q.when
+  ( test()
+  , function(value) {
+      assert.equal(value, r, 'resolved as expeted')
+      done()
+    }
+  , function(reason) {
+      assert.fail('promise rejected')
+    }
+  )
+}
+
 exports['test access to `this` pseoudo variable'] = function(assert, done) {
   var fixture =
   { name: 'fixture'
