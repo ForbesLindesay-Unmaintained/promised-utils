@@ -54,7 +54,7 @@ exports['test sync function reject args'] = function(assert, done) {
       assert.fail('result promise must not be resolved:' + value)
       done()
   }, function(reason) {
-      assert.equal(reason.message, 'f', 'got the function name')
+      assert.equal(reason.at, 'f', 'got the function name')
       assert.equal(reason.cause, error, 'got the cause correctly')
       done()
   })
@@ -155,7 +155,7 @@ exports['test reject because of exception'] = function(assert, done) {
       done()
     }
   , function(reason) {
-      assert.equal(reason.message, 'f', 'got the function name correctly')
+      assert.equal(reason.at, 'f', 'got the function name correctly')
       assert.equal(reason.cause, error, 'got the cause corrertly')
       done()
   })
