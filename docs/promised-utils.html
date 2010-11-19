@@ -1,121 +1,154 @@
-<!DOCTYPE html>  <html> <head>   <title>promised-utils.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               promised-utils.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-1">#</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="s1">&#39;use strict&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-2">#</a>               </div>               <p><strong>Collection of of utility functions that are useful when working
-with promises.</strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span> <span class="nx">when</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">when</span><span class="p">,</span> <span class="nx">asap</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">asap</span><span class="p">,</span> <span class="nx">defer</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">defer</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-3">#</a>               </div>               <p>function takes array of promises and returns a new promise, which will be
-resolved with an array of associated values. In case if any of the passed
-promises is rejected, returned promise will be rejected as well.</p>
+<!DOCTYPE html>  <html> <head>   <title>promised-utils.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               promised-utils.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-1">#</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="s1">&#39;use strict&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-2">#</a>               </div>               <p><strong>Module exports set of of utility functions that are useful for working
+with promises.</strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Q</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">),</span> <span class="nx">when</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">when</span><span class="p">,</span> <span class="nx">defer</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">defer</span>
 
-<p><strong>Example:</strong></p>
+<span class="p">,</span>   <span class="nx">_slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span>
+<span class="p">,</span>   <span class="nx">_forEach</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEach</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-3">#</a>               </div>               <h2>all</h2>
 
-<pre><code> when
- ( all([promise1, promise2, promise3])
- , function resolved(values) {
-     var result = 0
-     values.forEach(function(value) {
-       result += value
-     })
-     doSomething(result)
-   }
- , function rejected(reason) {
-     console.error(reason)
-   }
- }
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<p>Function takes array of promises and gives a new promise in return which will
+be fulfilled with an array of resolved promises that where passed. If any of
+the passed promises will get rejected, rejection will be forwarded to a
+returned promise.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> * Creates promise for array of the promises that is resolved with an array</span>
 <span class="cm"> * of the promise resolutions.</span>
 <span class="cm"> * @param {Promise[]} promises</span>
 <span class="cm"> *    Array of promises to create promise for.</span>
 <span class="cm"> */</span>
 <span class="kd">function</span> <span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
-  <span class="p">,</span>   <span class="nx">values</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="p">,</span>   <span class="nx">l</span> <span class="o">=</span> <span class="nx">promises</span><span class="p">.</span><span class="nx">length</span>
-  <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">promises</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">asap</span>
+  <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">promises</span><span class="p">.</span><span class="nx">length</span>
+  <span class="p">,</span>   <span class="nx">values</span> <span class="o">=</span> <span class="p">[]</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-4">#</a>               </div>               <p>If empty array is passed to the function it is returned immediately.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="nx">l</span><span class="p">)</span> <span class="k">return</span> <span class="nx">values</span>
+  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-5">#</a>               </div>               <p>Listeners are set for all the promises that where passed.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">_forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">promises</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">when</span>
     <span class="p">(</span> <span class="nx">promise</span>
-    <span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
-        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">===</span> <span class="o">--</span><span class="nx">l</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span>
-      <span class="p">}</span>
-    <span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">,</span> <span class="kd">function</span> <span class="nx">resolved</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-6">#</a>               </div>               <p>Resolved promises are stored in the array in the same exact order as
+they where passed to the function.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-7">#</a>               </div>               <p>If all the observed promises are resolved resulting promise is
+resolved with an array of resolved promises.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">===</span> <span class="o">--</span><span class="nx">l</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-8">#</a>               </div>               <p>If for some reason one of the promises is rejected, resulting promise
+is rejected with a same reason.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span> <span class="kd">function</span> <span class="nx">rejected</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">}</span>
     <span class="p">)</span>
   <span class="p">})</span>
   <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
-<span class="p">}</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">all</span> <span class="o">=</span> <span class="nx">all</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-4">#</a>               </div>               <p>Function takes deferred promise and returns node.js style callback
-function. If returned callback is called with first non falsy argument
-wrapped promise will be rejected with it, otherwise promise will be
-resolved with a value of the second argument that callaback funcion was
-called with.</p>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-9">#</a>               </div>               <p><strong>Example:</strong></p>
 
-<p><strong>Example:</strong></p>
+<pre><code> var Q = require('q'), when = Q.when, defer = Q.defer
+ var all = require('promised-utils').all
+
+ var d1 = defer(), d2 = defer(), d3 = defer()
+ when
+ ( all([d1.promise, d2.promise, d3.promise])
+ , function resolved(values) {
+     var result = 0
+     values.forEach(function(value) { result += value })
+     console.log(result)
+   }
+ , function rejected(reason) { console.error(reason) }
+ )
+
+ d1.resolve(2)
+ d2.resolve(100)
+ d3.resolve(15)
+
+ // &gt; 117
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">all</span> <span class="o">=</span> <span class="nx">all</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-10">#</a>               </div>               <h2>Promised</h2>
+
+<p>Function takes function as an argument. Optional second argument can be
+passed with a truthy value to make clear that function passed as a first
+argument is synchronous.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @param {Function} callee</span>
+<span class="cm"> * @returns {Promise}</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">Promised</span><span class="p">(</span><span class="nx">callee</span><span class="p">,</span> <span class="nx">sync</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-11">#</a>               </div>               <p>Passed function is wrapped into another, so called promised function, that
+is returned as a result.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">return</span> <span class="kd">function</span> <span class="nx">promised</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-12">#</a>               </div>               <p>Returned function always returns a new promise when called.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
+    <span class="p">,</span>   <span class="nx">reject</span> <span class="o">=</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-13">#</a>               </div>               <p>It also assumes that all of the arguments passed to it represent
+promises.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span>   <span class="nx">possiblyPromises</span> <span class="o">=</span> <span class="nx">_slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-14">#</a>               </div>               <p>In addition <code>this</code> pseudo-variable is also assumed to be a promise.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">possiblyPromises</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="k">this</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-15">#</a>               </div>               <p>When all the possible promises are resolved, wrapped function is called</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">when</span>
+    <span class="p">(</span> <span class="nx">all</span><span class="p">(</span><span class="nx">possiblyPromises</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-16">#</a>               </div>               <p>It is called with resolved promises as an arguments.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span> <span class="kd">function</span> <span class="nx">possiblePromisesResolved</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-17">#</a>               </div>               <p>If wrapped function was not identified as synchronous one
+additional argument, callback function is passed to it.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sync</span><span class="p">)</span> <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-18">#</a>               </div>               <p>Resolved <code>this</code> pseudo-variable is passed along.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">call</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">callee</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-19">#</a>               </div>               <p>If value returned by wrapped function was different from
+<code>undefined</code> or function was identified as synchronous returned
+promise will be resolved with it. Otherwise it will be rejected
+or resolved when additional callback function is invoked. If first
+argument to a callback function will be non-falsy promise will be
+rejected with it, in opposite case promise will be resolved as
+a second argument.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="p">(</span><span class="nx">sync</span> <span class="o">||</span> <span class="kc">undefined</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-20">#</a>               </div>               <p>If exception is thrown by wrapper function returned promise is
+rejected with it.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+        <span class="p">}</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-21">#</a>               </div>               <p>If for some reason one of the promises gets rejected, returned promise
+will be rejected with same reason, but with additional details.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span> <span class="nx">reject</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
+  <span class="p">}</span>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-22">#</a>               </div>               <p><strong>Example:</strong></p>
+
+<pre><code> var Q = require('q'), when = Q.when, defer = Q.defer
+ var Promised = require('promised-utils').Promised
+
+ var promisedSum = Promised(function sum(a, b) {
+   return a + b
+ })
+
+ var a = defer(), b = defer()
+ when(promisedSum(a.promise, b.promise), console.log, console.error)
+
+ a.resolve(2)
+ b.resolve(3)
+
+ // &gt; 5
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">exports</span><span class="p">.</span><span class="nx">Promised</span> <span class="o">=</span> <span class="nx">Promised</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-23">#</a>               </div>               <h3>Promised.async</h3>
+
+<p>At the moment functions wrapped by <code>Promised</code> are assumed to by asynchronous
+and they are called with additional callback argument. This assumption may
+change in a future version and this function can be used to explicitly
+highlight that passed function is synchronous and it expects to get
+a callback as a last argument.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Promised</span><span class="p">.</span><span class="nx">async</span> <span class="o">=</span> <span class="nx">Promised</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-24">#</a>               </div>               <h3>Promised.sync</h3>
+
+<p>As it was mentioned above <code>Promised</code> function assumes that functions passed
+to it are asynchronous and they will be called with an extra callback
+argument. This will work just fine in many cases, but not in cases where
+wrapped function expects unlimited amount of arguments and does not performs
+any checks on them.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Promised</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">syncPromised</span><span class="p">(</span><span class="nx">callee</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Promised</span><span class="p">(</span><span class="nx">callee</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-25">#</a>               </div>               <p><strong>Example:</strong></p>
+
+<pre><code> var Q = require('q'), when = Q.when, defer = Q.defer
+ var Promised = require('promised-utils').Promised
+
+ var promisedConcat = Promised.sync(String.prototype.concat.bind(''))
+ var d = defer()
+ var promisedString = promisedConcat('Hello ', d.promise)
+ when(promisedString, console.log) // will print Hello World
+ d.resolve('World')
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-26">#</a>               </div>               <h2>Reject</h2>
+
+<p>Function takes deferred promise and function performing operation that may
+throw an exception that should result in rejection of promise.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-27">#</a>               </div>               <p>Callback function is returned as a result value.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">return</span> <span class="kd">function</span> <span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-28">#</a>               </div>               <p>If callback is called wrapped promise is rejected with:</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-29">#</a>               </div>               <ul>
+<li>Function name containing logic.</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">{</span> <span class="nx">at</span><span class="o">:</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">name</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-30">#</a>               </div>               <ul>
+<li>Reason (thrown exception or string)</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span> <span class="nx">cause</span><span class="o">:</span> <span class="nx">reason</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-31">#</a>               </div>               <ul>
+<li>Error stack trace</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">,</span> <span class="nx">stack</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">callee</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">stack</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-32">#</a>               </div>               <h2>Callback</h2>
+
+<p>Function takes deferred promise and returns <a href="http://nodejs.org/">node.js</a>
+style callback function.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @param {Deferred}</span>
+<span class="cm"> * @returns {Function}</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-33">#</a>               </div>               <p>If returned callback is called with first non-falsy argument,
+wrapped promise is rejected with it.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-34">#</a>               </div>               <p>Otherwise promise is resolved with a value of a second argument.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">else</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">Callback</span> <span class="o">=</span> <span class="nx">Callback</span></pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-35">#</a>               </div>               <p><strong>Example:</strong></p>
 
 <pre><code> var Callback = require('promised-utils').Callback
  ,   q = require('q'), when = q.when, defer = q.defer
 
  function promisedReadFile(path) {
    var deferred = defer()
-   require('fs').readFile(Callback(deferred)
+   require('fs').readFile(Callback(deferred))
    return deferred
  }
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
-<span class="cm"> * @param {Deferred}</span>
-<span class="cm"> * @returns {Function}</span>
-<span class="cm"> */</span>
-<span class="kd">function</span> <span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
-    <span class="k">else</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">Callback</span> <span class="o">=</span> <span class="nx">Callback</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="octowrap">                 <a class="octothorpe" href="#section-5">#</a>               </div>               <p>Function returns wrapper function for the passed function. Wrapper function
-always returns a promise, that either will be resolved to a value returned
-by a wrapped function or rejected with an error if wrapped function will
-throw. Wrapper function treats all the arguments passed to it as promises,
-it waits waits untill all are resolved to call a wrapped function with a
-resolution values. This allows wrapping liniar function in a way that they
-don't have to care whether arguments being passed are promises or not.</p>
-
-<p><strong>Example:</strong></p>
-
-<pre><code> var Promised = require('promised-utils').Promised
- var promisedSum = Promised(function sum(number1Promise, number2Promise) {
-   return number1Promise + number2Promise
- })
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
-<span class="cm"> * @param {Function} callee</span>
-<span class="cm"> * @returns {Promise}</span>
-<span class="cm"> */</span>
-<span class="nx">exports</span><span class="p">.</span><span class="nx">Promised</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">Promised</span><span class="p">(</span><span class="nx">callee</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="kd">function</span> <span class="nx">promised</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">defer</span><span class="p">()</span>
-    <span class="p">,</span>   <span class="nx">reject</span> <span class="o">=</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span>
-    <span class="p">,</span>   <span class="nx">callback</span> <span class="o">=</span> <span class="nx">Callback</span><span class="p">(</span><span class="nx">deferred</span><span class="p">)</span>
-    <span class="p">,</span>   <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span>
-
-    <span class="nx">asap</span>
-    <span class="p">(</span> <span class="nx">all</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)</span>
-    <span class="p">,</span> <span class="kd">function</span> <span class="nx">resolved</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">try</span> <span class="p">{</span>
-          <span class="nx">params</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span>
-          <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
-          <span class="k">if</span> <span class="p">(</span><span class="kc">undefined</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">reject</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-    <span class="p">,</span> <span class="nx">reject</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">function</span> <span class="nx">Reject</span><span class="p">(</span><span class="nx">deferred</span><span class="p">,</span> <span class="nx">callee</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="kd">function</span> <span class="nx">reject</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span>
-    <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">callee</span><span class="p">.</span><span class="nx">name</span>
-    <span class="p">,</span> <span class="nx">cause</span><span class="o">:</span> <span class="nx">reason</span>
-    <span class="p">,</span> <span class="nx">stack</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">callee</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">stack</span>
-    <span class="p">})</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
