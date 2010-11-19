@@ -233,4 +233,23 @@ exports['test apply `this` pseoudo variable'] = function(assert, done) {
   )
 }
 
+exports['test promised `this` pseoudo variable'] = function(assert, done) {
+  var d1 = Q.defer(), d2 = Q.defer()
+  ,   fixture = Promised(function callee(bar) { return this.foo + bar })
+
+  Q.when
+  ( fixture.call(d1.promise, d2.promise)
+  , function resolved(value) {
+      assert.equal(value, 17, '`this` pseoudo-variable and passed arg was read')
+      done()
+    }
+  , function rejected() {
+      done(assert.fail('promised unexpectedly rejected'))
+    }
+  )
+
+  d1.resolve({ foo: 9 })
+  d2.resolve(8)
+}
+
 if (module == require.main) require('test').run(exports)
