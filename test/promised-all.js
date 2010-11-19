@@ -17,4 +17,18 @@ exports['test resolve several'] = function(assert, done) {
   d2.resolve(2)
 }
 
+exports['test reject one'] = function(assert, done) {
+  var d1 = Q.defer(), d2 = Q.defer()
+  Q.when
+  ( all([d1.promise, d2.promise])
+  , function(value) {
+      assert.fail('promise was resolved unexpectedly')
+    }
+  , function(reason) {
+      done(assert.equal(reason, 'oops', 'promise was rejected'))
+    }
+  )
+  d2.reject('oops')
+}
+
 if (module == require.main) require('test').run(exports)
