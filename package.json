@@ -1,5 +1,5 @@
 { "name": "promised-utils"
-, "version": "0.0.4"
+, "version": "0.0.5"
 , "description": "Utils for promises."
 , "homepage": "http://github.com/Gozala/promised-utils/"
 , "keywords": ["promises", "utils"]
@@ -11,13 +11,12 @@
   }
 , "bugs": { "web": "http://github.com/Gozala/promised-utils/issues/" }
 , "directories":
-  { "doc": "./doc"
-  , "man": "./man"
+  { "doc": "./docs"
   , "lib": "./lib"
   , "test": "./test"
   }
 , "dependencies":
-  { "test": ">=0.0.5"
+  { "test": ">=0.0.10"
   , "q": ">=0.1.0"
   }
 , "main": "./lib/promised-utils.js"
