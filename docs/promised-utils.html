@@ -115,7 +115,7 @@ will be rejected with same reason, but with additional details.</p>             
  print = Promised.sync(console.log.bind(console))
  print(promise.get('some.object.message')
  promise.set('some.object.property', { foo: 'bar' })
- print(promise.some.object.talk('world'))
+ print(promise.invoke('some.object.talk, ['world']))
  setTimeout(function() {
    deferred.resolve(
    { some:
