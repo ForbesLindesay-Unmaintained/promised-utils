@@ -1,5 +1,5 @@
 { "name": "promised-utils"
-, "version": "0.0.5"
+, "version": "0.0.6"
 , "description": "Utils for promises."
 , "homepage": "http://github.com/Gozala/promised-utils/"
 , "keywords": ["promises", "utils"]
