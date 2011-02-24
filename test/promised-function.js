@@ -42,6 +42,7 @@ exports['test sync function reject args'] = function(assert, done) {
   ,   v1 = 'foo'
   ,   v3 = 'baz'
   ,   error = 'oops'
+  ,   resolved = false
   
   var f = Promised(function f(a, b, c) {
     assert.fail('wrapped function should never be called')
