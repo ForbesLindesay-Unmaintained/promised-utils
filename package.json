@@ -1,8 +1,12 @@
-{ "name": "promised-utils",
+{
+  "name": "promised-utils",
   "version": "0.0.9",
   "description": "Utils for promises.",
   "homepage": "http://github.com/Gozala/promised-utils/",
-  "keywords": ["promises", "utils"],
+  "keywords": [
+    "promises",
+    "utils"
+  ],
   "contributors": [
     "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)"
   ],
@@ -23,15 +27,19 @@
     "q": ">=0.2.5"
   },
   "main": "./lib/promised-utils.js",
-  "scripts": { "test": "node test/all.js" },
+  "scripts": {
+    "test": "node test/all.js"
+  },
   "engines": {
     "node": ">=0.1.103",
     "teleport": ">=0.2.0"
   },
   "licenses": [
     {
-      "type" : "MPL 1.1/LGPL 2.1/GPL 2.0",
-      "url" : "http://www.mozilla.org/MPL/"
+      "type": "MPL 1.1/LGPL 2.1/GPL 2.0",
+      "url": "http://www.mozilla.org/MPL/"
     }
-  ]
+  ],
+  "author": "ForbesLindesay",
+  "license": "MIT"
 }
